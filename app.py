@@ -1,22 +1,12 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import joblib
+from models.model_params import coef, intercept, scaler_mean, scaler_scale, label_encoders
 
-st.set_page_config(
-    page_title="Credit Risk Scoring",
-    page_icon="💳",
-    layout="wide"
-)
+st.set_page_config(page_title="Credit Risk Scoring", page_icon="💳", layout="wide")
 
-try:
-    model = joblib.load("models/model.joblib")
-    scaler = joblib.load("models/scaler.joblib")
-    label_encoders = joblib.load("models/label_encoders.joblib")
-except Exception as e:
-    st.error(f"Error loading model files: {e}")
-    st.info("Please run 'python train_model.py' first to train the model.")
-    st.stop()
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
 
 def predict_credit_risk(input_data):
     input_df = pd.DataFrame([input_data])
@@ -26,11 +16,13 @@ def predict_credit_risk(input_data):
     
     for col in categorical_cols:
         if col in label_encoders:
-            input_df[col] = label_encoders[col].transform(input_df[col])
+            input_df[col] = label_encoders[col][input_df[col].iloc[0]]
     
-    input_scaled = scaler.transform(input_df)
-    prediction = model.predict(input_scaled)[0]
-    probability = model.predict_proba(input_scaled)[0]
+    input_scaled = (input_df.values - scaler_mean) / scaler_scale
+    z = np.dot(input_scaled, coef) + intercept
+    prob_paid = sigmoid(z)[0]
+    prediction = 1 if prob_paid > 0.5 else 0
+    probability = [1 - prob_paid, prob_paid]
     
     return prediction, probability
 

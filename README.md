@@ -101,8 +101,9 @@ This application is deployed on Streamlit Cloud: [Live Demo](https://credit-risk
 ## Team
 
 - Ravleen Singh
-- Team Member 2
-- Team Member 3
+- Anurag Pandey
+- Ansh Tomar
+- Himanshu Chauhan
 
 ## License
 

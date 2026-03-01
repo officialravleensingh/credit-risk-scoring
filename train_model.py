@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
-import joblib
 from utils.preprocessing import load_data, preprocess_data, prepare_features, scale_features
 
 def train_model():
@@ -45,10 +44,29 @@ def train_model():
     print("\nConfusion Matrix:")
     print(confusion_matrix(y_test, y_pred))
     
-    print("\nSaving model and scaler...")
-    joblib.dump(model, 'models/model.joblib')
-    joblib.dump(scaler, 'models/scaler.joblib')
-    joblib.dump(label_encoders, 'models/label_encoders.joblib')
+    print("\nSaving model parameters...")
+    with open('models/model_params.py', 'w') as f:
+        f.write('import numpy as np\n\n')
+        f.write('coef = np.array([\n')
+        for val in model.coef_[0]:
+            f.write(f'    {val},\n')
+        f.write('])\n\n')
+        f.write(f'intercept = {model.intercept_[0]}\n\n')
+        f.write('scaler_mean = np.array([\n')
+        for val in scaler.mean_:
+            f.write(f'    {val},\n')
+        f.write('])\n\n')
+        f.write('scaler_scale = np.array([\n')
+        for val in scaler.scale_:
+            f.write(f'    {val},\n')
+        f.write('])\n\n')
+        f.write('label_encoders = {\n')
+        for col, le in label_encoders.items():
+            f.write(f'    "{col}": {{\n')
+            for i, cls in enumerate(le.classes_):
+                f.write(f'        "{cls}": {i},\n')
+            f.write('    },\n')
+        f.write('}\n')
     
     print("Training complete!")
     return accuracy, roc_auc
