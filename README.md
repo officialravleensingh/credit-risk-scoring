@@ -89,14 +89,14 @@ The app will open in your browser at `http://localhost:8501`
 
 ## Model Performance
 
-- **Best Model**: TBD after training
-- **Accuracy**: TBD
-- **ROC-AUC**: TBD
+- **Best Model**: Logistic Regression
+- **Accuracy**: 88.78%
+- **ROC-AUC**: 0.8515
 - **Evaluation Metrics**: Accuracy, Precision, Recall, F1-Score, ROC-AUC
 
 ## Deployment
 
-This application will be deployed on Streamlit Cloud.
+This application is deployed on Streamlit Cloud: [Live Demo](https://credit-riskscoring.streamlit.app)
 
 ## Team
 
