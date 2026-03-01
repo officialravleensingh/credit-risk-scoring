@@ -39,7 +39,7 @@ This project implements an automated credit risk assessment system that predicts
 ## Project Structure
 
 ```
-FinalProject/
+credit-risk-scoring/
 ├── app.py                    # Streamlit web application
 ├── train_model.py            # Model training script
 ├── compare_models.py         # Model comparison
@@ -47,12 +47,14 @@ FinalProject/
 │   └── preprocessing.py      # Data preprocessing functions
 ├── models/
 │   ├── model.joblib          # Trained model
-│   └── scaler.joblib         # Fitted scaler
+│   ├── scaler.joblib         # Fitted scaler
+│   └── label_encoders.joblib # Label encoders
 ├── dataset/
 │   └── original_dataset.csv  # Training data
 ├── notebooks/
 │   └── eda.ipynb            # Exploratory data analysis
 ├── requirements.txt          # Python dependencies
+├── .gitignore               # Git ignore rules
 └── README.md                # Project documentation
 ```
 
@@ -61,7 +63,7 @@ FinalProject/
 1. Clone the repository:
 ```bash
 git clone https://github.com/officialravleensingh/credit-risk-scoring.git
-cd credit-risk-scoring/FinalProject
+cd credit-risk-scoring
 ```
 
 2. Install dependencies:
