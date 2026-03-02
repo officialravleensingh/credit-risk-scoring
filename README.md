@@ -216,7 +216,7 @@ pip install -r requirements.txt
 
 3. **Verify installation**
 ```bash
-python --version
+python --versions
 ```
 
 ---
