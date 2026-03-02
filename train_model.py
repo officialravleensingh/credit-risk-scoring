@@ -1,9 +1,50 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
 from utils.preprocessing import load_data, preprocess_data, prepare_features, scale_features
+
+def plot_confusion_matrix(y_test, y_pred, accuracy):
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=True)
+    plt.title(f'Confusion Matrix\nAccuracy: {accuracy*100:.2f}%', fontsize=14, fontweight='bold')
+    plt.ylabel('Actual', fontsize=12)
+    plt.xlabel('Predicted', fontsize=12)
+    plt.tight_layout()
+    plt.savefig('visualizations/final_confusion_matrix.png', dpi=300, bbox_inches='tight')
+    print("Saved: visualizations/final_confusion_matrix.png")
+
+def plot_roc_curve(y_test, y_pred_proba, roc_auc):
+    fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.4f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random Classifier')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate', fontsize=12)
+    plt.ylabel('True Positive Rate', fontsize=12)
+    plt.title('Receiver Operating Characteristic (ROC) Curve', fontsize=14, fontweight='bold')
+    plt.legend(loc="lower right")
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig('visualizations/final_roc_curve.png', dpi=300, bbox_inches='tight')
+    print("Saved: visualizations/final_roc_curve.png")
+
+def plot_feature_importance(model, feature_names):
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[-10:]
+    plt.figure(figsize=(10, 6))
+    plt.barh(range(len(indices)), importances[indices], color='skyblue')
+    plt.yticks(range(len(indices)), [feature_names[i] for i in indices])
+    plt.xlabel('Importance', fontsize=12)
+    plt.title('Top 10 Most Important Features', fontsize=14, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig('visualizations/final_feature_importance.png', dpi=300, bbox_inches='tight')
+    print("Saved: visualizations/final_feature_importance.png")
 
 def train_model():
     print("Loading data...")
@@ -26,8 +67,8 @@ def train_model():
     print("Scaling features...")
     X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
     
-    print("\nTraining Logistic Regression model...")
-    model = LogisticRegression(max_iter=1000, random_state=42)
+    print("\nTraining Random Forest model...")
+    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10, n_jobs=-1)
     model.fit(X_train_scaled, y_train)
     
     print("Evaluating model...")
@@ -44,14 +85,22 @@ def train_model():
     print("\nConfusion Matrix:")
     print(confusion_matrix(y_test, y_pred))
     
+    print("\nGenerating visualizations...")
+    plot_confusion_matrix(y_test, y_pred, accuracy)
+    plot_roc_curve(y_test, y_pred_proba, roc_auc)
+    plot_feature_importance(model, X.columns.tolist())
+    
     print("\nSaving model parameters...")
     with open('models/model_params.py', 'w') as f:
         f.write('import numpy as np\n\n')
-        f.write('coef = np.array([\n')
-        for val in model.coef_[0]:
+        f.write(f'model_type = "RandomForest"\n')
+        f.write(f'n_estimators = {model.n_estimators}\n')
+        f.write(f'max_depth = {model.max_depth}\n')
+        f.write(f'random_state = {model.random_state}\n\n')
+        f.write('feature_importances = np.array([\n')
+        for val in model.feature_importances_:
             f.write(f'    {val},\n')
         f.write('])\n\n')
-        f.write(f'intercept = {model.intercept_[0]}\n\n')
         f.write('scaler_mean = np.array([\n')
         for val in scaler.mean_:
             f.write(f'    {val},\n')
@@ -66,7 +115,9 @@ def train_model():
             for i, cls in enumerate(le.classes_):
                 f.write(f'        "{cls}": {i},\n')
             f.write('    },\n')
-        f.write('}\n')
+        f.write('}\n\n')
+        f.write(f'accuracy = {accuracy}\n')
+        f.write(f'roc_auc = {roc_auc}\n')
     
     print("Training complete!")
     return accuracy, roc_auc
