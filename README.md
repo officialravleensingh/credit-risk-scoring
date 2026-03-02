@@ -374,7 +374,7 @@ All visualizations are automatically generated during training and displayed in 
 | Name | Role | Contributions |
 |------|------|---------------|
 | **Ravleen Singh** | Project Lead | Model development, training pipeline, deployment, integration |
-| **Anurag Pandey** | Data Engineer | Data preprocessing, feature engineering, categorical encoding |
+| **Anurag Pandey** | Data Engineer | Data Preprocessing, Feature Engineering, Categorical Encoding |
 | **Ansh Tomar** | Data Analyst | EDA, visualization, documentation, insights generation |
 | **Himanshu Chauhan** | Frontend Developer | UI development, Streamlit app design, testing, UX optimization |
 
