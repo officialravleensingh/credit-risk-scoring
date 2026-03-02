@@ -1,4 +1,4 @@
-# 💳 Intelligent Credit Risk Scoring System
+#  Intelligent Credit Risk Scoring System
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red.svg)](https://streamlit.io/)
@@ -11,7 +11,7 @@ Automated credit risk prediction system using classical machine learning to asse
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 
 - [Project Overview](#project-overview)
 - [Problem Statement](#problem-statement)
@@ -29,20 +29,20 @@ Automated credit risk prediction system using classical machine learning to asse
 
 ---
 
-## 🎯 Project Overview
+##  Project Overview
 
 This project implements an intelligent credit risk assessment system that predicts the likelihood of loan repayment based on comprehensive borrower information. Traditional manual credit evaluation processes are time-consuming and prone to human bias. Our system automates this process using machine learning trained on **20,000 historical loan applications**, enabling faster and more reliable lending decisions.
 
 ### Key Achievements
-- ✅ **90.15% Accuracy** with Random Forest model
-- ✅ **0.8759 ROC-AUC Score** demonstrating excellent discrimination
-- ✅ **Real-time predictions** through interactive web interface
-- ✅ **Comprehensive model comparison** (Logistic Regression, Decision Tree, Random Forest)
-- ✅ **Production-ready deployment** on Streamlit Cloud
+-  **90.15% Accuracy** with Random Forest model
+-  **0.8759 ROC-AUC Score** demonstrating excellent discrimination
+-  **Real-time predictions** through interactive web interface
+-  **Comprehensive model comparison** (Logistic Regression, Decision Tree, Random Forest)
+-  **Production-ready deployment** on Streamlit Cloud
 
 ---
 
-## 🚨 Problem Statement
+##  Problem Statement
 
 Financial institutions face significant challenges in evaluating loan applications:
 
@@ -57,7 +57,7 @@ Financial institutions face significant challenges in evaluating loan applicatio
 
 ---
 
-## 📊 Dataset
+##  Dataset
 
 ### Overview
 
@@ -76,13 +76,13 @@ Financial institutions face significant challenges in evaluating loan applicatio
 <tr>
 <td width="50%">
 
-**👤 Demographics**
+** Demographics**
 - age
 - gender
 - marital_status
 - education_level
 
-**💰 Financial Information**
+** Financial Information**
 - annual_income
 - monthly_income
 - debt_to_income_ratio
@@ -94,7 +94,7 @@ Financial institutions face significant challenges in evaluating loan applicatio
 </td>
 <td width="50%">
 
-**🏦 Loan Details**
+** Loan Details**
 - loan_amount
 - loan_purpose
 - interest_rate
@@ -102,7 +102,7 @@ Financial institutions face significant challenges in evaluating loan applicatio
 - installment
 - grade_subgrade
 
-**📈 Credit History**
+** Credit History**
 - employment_status
 - delinquency_history
 - public_records
@@ -122,17 +122,17 @@ Financial institutions face significant challenges in evaluating loan applicatio
 
 ---
 
-## 🏆 Model Performance
+##  Model Performance
 
 ### Model Comparison Results
 
 | Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |-------|----------|-----------|--------|----------|---------|
-| **Random Forest** ⭐ | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
+| **Random Forest**  | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
 | Logistic Regression | 88.78% | 0.8995 | 0.9678 | 0.9324 | 0.8515 |
 | Decision Tree | 88.52% | 0.8983 | 0.9659 | 0.9309 | 0.8406 |
 
-⭐ **Best Model: Random Forest** - Selected for deployment
+ **Best Model: Random Forest** - Selected for deployment
 
 ### Detailed Performance (Random Forest)
 
@@ -160,15 +160,15 @@ Actual Default    425       375
 
 ---
 
-## ✨ Features
+##  Features
 
 ### Core Capabilities
-- 🎯 **Automated Risk Assessment** - Instant credit risk evaluation
-- 📊 **Multi-Model Comparison** - Tested 3 ML algorithms
-- 🔄 **Real-time Predictions** - Sub-second response time
-- 📈 **Visual Analytics** - Confusion matrices, ROC curves, feature importance
-- 🌐 **Cloud Deployment** - Accessible worldwide 24/7
-- 🔒 **Bias-Free Decisions** - Consistent evaluation criteria
+-  **Automated Risk Assessment** - Instant credit risk evaluation
+-  **Multi-Model Comparison** - Tested 3 ML algorithms
+-  **Real-time Predictions** - Sub-second response time
+-  **Visual Analytics** - Confusion matrices, ROC curves, feature importance
+-  **Cloud Deployment** - Accessible worldwide 24/7
+-  **Bias-Free Decisions** - Consistent evaluation criteria
 
 ### Technical Features
 - Custom data preprocessing pipeline
@@ -180,7 +180,7 @@ Actual Default    425       375
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
@@ -195,7 +195,7 @@ Actual Default    425       375
 
 ---
 
-## 📥 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.13 or higher
@@ -216,12 +216,12 @@ pip install -r requirements.txt
 
 3. **Verify installation**
 ```bash
-python --version  # Should show Python 3.13+
+python --version
 ```
 
 ---
 
-## 🚀 Usage
+##  Usage
 
 ### 1. Train the Model
 
@@ -271,7 +271,7 @@ streamlit run app.py
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 credit-risk-scoring/
@@ -301,7 +301,7 @@ credit-risk-scoring/
 
 ---
 
-## 🔬 Methodology
+##  Methodology
 
 ### 1. Data Preprocessing
 
@@ -356,20 +356,53 @@ credit-risk-scoring/
 
 ---
 
-## 📈 Visualizations
+##  Visualizations
 
-### Generated Visualizations
+### Model Comparison
 
-1. **Confusion Matrices** - Visual representation of predictions vs actual
-2. **ROC Curves** - Model performance across thresholds
-3. **Metrics Comparison** - Bar chart comparing all models
-4. **Feature Importance** - Top 10 most influential features
+<p align="center">
+  <img src="visualizations/confusion_matrices.png" alt="Confusion Matrices" width="800"/>
+  <br>
+  <em>Figure 1: Confusion Matrices for all three models</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/roc_curves.png" alt="ROC Curves" width="600"/>
+  <br>
+  <em>Figure 2: ROC Curves Comparison - Random Forest achieves highest AUC</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/metrics_comparison.png" alt="Metrics Comparison" width="700"/>
+  <br>
+  <em>Figure 3: Performance Metrics Comparison across all models</em>
+</p>
+
+### Best Model (Random Forest)
+
+<p align="center">
+  <img src="visualizations/final_confusion_matrix.png" alt="Final Confusion Matrix" width="500"/>
+  <br>
+  <em>Figure 4: Random Forest Confusion Matrix - 90.15% Accuracy</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/final_roc_curve.png" alt="Final ROC Curve" width="500"/>
+  <br>
+  <em>Figure 5: Random Forest ROC Curve - AUC = 0.8759</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/final_feature_importance.png" alt="Feature Importance" width="600"/>
+  <br>
+  <em>Figure 6: Top 10 Most Important Features</em>
+</p>
 
 All visualizations are automatically generated during training and displayed in the Streamlit app sidebar.
 
 ---
 
-## 👥 Team
+##  Team
 
 | Name | Role | Contributions |
 |------|------|---------------|
@@ -380,7 +413,7 @@ All visualizations are automatically generated during training and displayed in 
 
 ---
 
-## 🔮 Future Work
+##  Future Work
 
 ### Planned Enhancements
 
@@ -411,13 +444,13 @@ All visualizations are automatically generated during training and displayed in 
 
 ---
 
-## 📄 License
+##  License
 
-This project is part of the **GenAI Capstone Project (Milestone 1)** at Newton School of Technology.
+This project is part of the **GenAI Capstone Project** at Newton School of Technology.
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **Newton School of Technology** - Project guidance and support
 - **Streamlit** - Deployment platform
@@ -426,20 +459,11 @@ This project is part of the **GenAI Capstone Project (Milestone 1)** at Newton S
 
 ---
 
-## 📞 Contact
+##  Contact
 
 - **GitHub:** [officialravleensingh](https://github.com/officialravleensingh)
 - **Live Demo:** [credit-riskscoring.streamlit.app](https://credit-riskscoring.streamlit.app)
-- **Project Type:** Classical Machine Learning (No GenAI)
+- **Project Type:** Classical Machine Learning
 - **Institution:** Newton School of Technology
-- **Date:** February 2025
-
+- **Date:** February 2026
 ---
-
-<div align="center">
-
-**⭐ Star this repository if you find it helpful!**
-
-Made with ❤️ by Team Credit Risk Scoring
-
-</div>
