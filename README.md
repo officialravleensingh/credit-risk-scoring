@@ -31,10 +31,8 @@ An end-to-end credit analytics system: **Milestone 1** uses classical machine le
 
 Financial institutions face significant challenges in evaluating loan applications — manual assessment is slow, prone to bias, and difficult to scale. This project delivers a two-phase solution:
 
-| Phase | Approach | Key Output |
-|-------|----------|------------|
-| **Milestone 1** | Classical ML (Random Forest) | Risk score + probability |
-| **Milestone 2** | Agentic AI (LangGraph + RAG) | Structured lending report with regulatory references |
+- **Milestone 1:** Classical ML (Random Forest) for repayment/default prediction with risk probabilities.
+- **Milestone 2:** Agentic AI workflow (LangGraph + RAG) for structured lending recommendations with regulatory references.
 
 ---
 
@@ -250,18 +248,6 @@ credit-risk-scoring/
 | **Anurag Pandey** | Data Engineer | Data preprocessing, feature engineering, RAG knowledge base |
 | **Ansh Tomar** | Data Analyst | EDA, visualization, documentation, regulatory research |
 | **Himanshu Chauhan** | Frontend Developer | UI development, Streamlit pages, testing, UX |
-
----
-
-## Evaluation Criteria Alignment
-
-| Component | Milestone 1 (25%) | Milestone 2 (30%) |
-|-----------|-------------------|-------------------|
-| Technical Implementation | ✅ 3 ML models, preprocessing pipeline | ✅ LangGraph agent, RAG integration |
-| GitHub & Code Quality | ✅ Modular code, meaningful commits | ✅ Separate agent/RAG modules |
-| Hosted Demo | ✅ Streamlit Cloud | ✅ Same deployment, new page |
-| Project Report | ✅ LaTeX format | ✅ Updated with agentic workflow |
-| Responsible AI | ✅ Bias-free ML | ✅ ECOA compliance, legal disclaimer |
 
 ---
 
