@@ -1,8 +1,8 @@
-# 📊 Presentation Assets - Summary
+#  Presentation Assets - Summary
 
-## ✅ What Has Been Created
+##  What Has Been Created
 
-### 🎨 Visual Assets (14 Slides)
+###  Visual Assets (14 Slides)
 All slides are located in: `presentation_assets/slides/`
 
 1. **01_title_slide.png** - Opening title with team names
@@ -20,7 +20,7 @@ All slides are located in: `presentation_assets/slides/`
 13. **13_metrics_comparison.png** - Bar chart comparing metrics
 14. **14_end_credits.png** - End credits with links
 
-### 📄 Documentation Files
+###  Documentation Files
 
 1. **VIDEO_PRODUCTION_GUIDE.md** - Complete production guide with:
    - Detailed slide-to-script mapping
@@ -47,7 +47,7 @@ All slides are located in: `presentation_assets/slides/`
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### For Speakers:
 1. Read **QUICK_REFERENCE.md** first (5 min read)
@@ -63,26 +63,26 @@ All slides are located in: `presentation_assets/slides/`
 
 ---
 
-## 📁 File Structure
+##  File Structure
 
 ```
 credit-risk-scoring/
-├── presentation_assets/
-│   └── slides/
-│       ├── 01_title_slide.png
-│       ├── 02_problem_statement.png
-│       ├── ... (14 slides total)
-│       └── 14_end_credits.png
-├── VIDEO_PRODUCTION_GUIDE.md      # Complete guide
-├── QUICK_REFERENCE.md             # Cheat sheet
-├── ANNOTATED_SCRIPT.md            # Script with cues
-├── generate_presentation_assets.py # Slide generator
-└── README.md                      # Project README
+ presentation_assets/
+    slides/
+        01_title_slide.png
+        02_problem_statement.png
+        ... (14 slides total)
+        14_end_credits.png
+ VIDEO_PRODUCTION_GUIDE.md      # Complete guide
+ QUICK_REFERENCE.md             # Cheat sheet
+ ANNOTATED_SCRIPT.md            # Script with cues
+ generate_presentation_assets.py # Slide generator
+ README.md                      # Project README
 ```
 
 ---
 
-## 🎬 Recording Order
+##  Recording Order
 
 ### Recommended Sequence:
 1. **Ravleen** - Opening + Problem Statement (1 min)
@@ -98,7 +98,7 @@ credit-risk-scoring/
 
 ---
 
-## 📊 Slide Usage Map
+##  Slide Usage Map
 
 | Slide | Used By | Duration | Section |
 |-------|---------|----------|---------|
@@ -121,20 +121,20 @@ credit-risk-scoring/
 
 ---
 
-## 🎯 Key Success Metrics
+##  Key Success Metrics
 
 Your video should achieve:
-- ✅ Total duration: 5:00 - 5:40 minutes
-- ✅ All 14 slides visible and readable
-- ✅ Clear audio from all speakers
-- ✅ Smooth transitions between segments
-- ✅ Live demos working properly
-- ✅ All key metrics mentioned (90.15%, 99% recall, etc.)
-- ✅ Professional presentation quality
+-  Total duration: 5:00 - 5:40 minutes
+-  All 14 slides visible and readable
+-  Clear audio from all speakers
+-  Smooth transitions between segments
+-  Live demos working properly
+-  All key metrics mentioned (90.15%, 99% recall, etc.)
+-  Professional presentation quality
 
 ---
 
-## 🛠️ Tools Needed
+##  Tools Needed
 
 ### Recording:
 - Screen recording software (OBS Studio, Loom, Zoom)
@@ -153,7 +153,7 @@ Your video should achieve:
 
 ---
 
-## 📞 Team Coordination
+##  Team Coordination
 
 ### File Sharing:
 Create a shared folder with:
@@ -168,7 +168,7 @@ Create a shared folder with:
 
 ---
 
-## ✅ Final Checklist
+##  Final Checklist
 
 ### Before Recording:
 - [ ] All slides reviewed
@@ -199,7 +199,7 @@ Create a shared folder with:
 
 ---
 
-## 🎓 Tips for Success
+##  Tips for Success
 
 1. **Practice your section 3-4 times** before recording
 2. **Speak clearly and at moderate pace** - not too fast
@@ -211,7 +211,7 @@ Create a shared folder with:
 
 ---
 
-## 📈 Expected Outcome
+##  Expected Outcome
 
 A professional 5-minute video presentation featuring:
 - Clear explanation of the credit risk scoring system
@@ -223,7 +223,7 @@ A professional 5-minute video presentation featuring:
 
 ---
 
-## 🆘 Troubleshooting
+##  Troubleshooting
 
 ### Issue: Slide not visible
 **Solution:** Ensure full screen mode, check resolution
@@ -242,7 +242,7 @@ A professional 5-minute video presentation featuring:
 
 ---
 
-## 📧 Support
+##  Support
 
 If you need help:
 1. Check **VIDEO_PRODUCTION_GUIDE.md** for detailed instructions
@@ -252,19 +252,19 @@ If you need help:
 
 ---
 
-## 🎉 You're Ready!
+##  You're Ready!
 
 Everything you need is prepared:
-- ✅ 14 professional slides generated
-- ✅ Complete script with timing
-- ✅ Recording instructions
-- ✅ Editing guidelines
-- ✅ Quick reference materials
+-  14 professional slides generated
+-  Complete script with timing
+-  Recording instructions
+-  Editing guidelines
+-  Quick reference materials
 
-**Now go create an amazing presentation! 🚀**
+**Now go create an amazing presentation! **
 
 ---
 
-**Good luck to the entire team! 💪**
+**Good luck to the entire team! **
 
 *Ravleen Singh • Anurag Pandey • Ansh Tomar • Himanshu Chauhan*

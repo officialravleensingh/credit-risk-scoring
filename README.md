@@ -8,7 +8,7 @@
 
 An end-to-end credit analytics system: **Milestone 1** uses classical machine learning to predict loan repayment with **90.15% accuracy**. **Milestone 2** extends this into an agentic AI lending advisor that autonomously reasons about borrower risk, retrieves financial regulations via RAG, and generates structured credit assessment reports.
 
-🔗 **[Live Demo](https://credit-riskscoring.streamlit.app)** | 📂 **[GitHub Repository](https://github.com/officialravleensingh/credit-risk-scoring)**
+ **[Live Demo](https://credit-riskscoring.streamlit.app)** |  **[GitHub Repository](https://github.com/officialravleensingh/credit-risk-scoring)**
 
 ---
 
@@ -42,7 +42,7 @@ Financial institutions face significant challenges in evaluating loan applicatio
 
 | Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |-------|----------|-----------|--------|----------|---------:|
-| **Random Forest** ⭐ | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
+| **Random Forest**  | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
 | Logistic Regression | 88.78% | 0.8995 | 0.9678 | 0.9324 | 0.8515 |
 | Decision Tree | 88.52% | 0.8983 | 0.9659 | 0.9309 | 0.8406 |
 
@@ -210,32 +210,32 @@ The app has two pages:
 
 ```
 credit-risk-scoring/
-├── app.py                          # Streamlit main page (Milestone 1)
-├── train_model.py                  # Random Forest training script
-├── compare_models.py               # Model comparison script
-├── agent/
-│   ├── __init__.py
-│   ├── state.py                    # LangGraph state definition
-│   ├── nodes.py                    # Agent nodes (risk analyzer, retriever, reporter)
-│   ├── graph.py                    # LangGraph workflow assembly
-│   └── rag.py                      # FAISS retrieval module
-├── data/
-│   └── regulations.txt             # Financial regulations knowledge base
-├── pages/
-│   └── lending_advisor.py          # Streamlit page (Milestone 2)
-├── utils/
-│   └── preprocessing.py            # Data preprocessing functions
-├── models/
-│   └── model_params.py             # Trained model parameters
-├── dataset/
-│   └── original_dataset.csv        # 20,000 loan applications
-├── visualizations/                 # Generated charts (7 PNG files)
-├── notebooks/
-│   └── eda.ipynb                   # Exploratory data analysis
-├── requirements.txt
-├── .env.example                    # Environment variable template
-├── .gitignore
-└── README.md
+ app.py                          # Streamlit main page (Milestone 1)
+ train_model.py                  # Random Forest training script
+ compare_models.py               # Model comparison script
+ agent/
+    __init__.py
+    state.py                    # LangGraph state definition
+    nodes.py                    # Agent nodes (risk analyzer, retriever, reporter)
+    graph.py                    # LangGraph workflow assembly
+    rag.py                      # FAISS retrieval module
+ data/
+    regulations.txt             # Financial regulations knowledge base
+ pages/
+    lending_advisor.py          # Streamlit page (Milestone 2)
+ utils/
+    preprocessing.py            # Data preprocessing functions
+ models/
+    model_params.py             # Trained model parameters
+ dataset/
+    original_dataset.csv        # 20,000 loan applications
+ visualizations/                 # Generated charts (7 PNG files)
+ notebooks/
+    eda.ipynb                   # Exploratory data analysis
+ requirements.txt
+ .env.example                    # Environment variable template
+ .gitignore
+ README.md
 ```
 
 ---

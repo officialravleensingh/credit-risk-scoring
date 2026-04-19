@@ -8,7 +8,7 @@ from models.model_params import (
 )
 from PIL import Image
 
-st.set_page_config(page_title="Credit Risk Scoring", page_icon="💳", layout="wide")
+st.set_page_config(page_title="Credit Risk Scoring", page_icon="", layout="wide")
 
 FEATURE_ORDER = [
     'age', 'gender', 'marital_status', 'education_level', 'annual_income',
@@ -65,14 +65,14 @@ def predict_credit_risk(input_data):
     return prediction, probability
 
 
-# ── Sidebar ──────────────────────────────────────────────────────────────────
-st.sidebar.title("ℹ️ About")
+#  Sidebar 
+st.sidebar.title("ℹ About")
 st.sidebar.info(
     "This application predicts credit risk and loan repayment probability "
     "using Random Forest machine learning trained on 20,000 historical loan applications."
 )
 
-st.sidebar.markdown("### 📈 Model Performance")
+st.sidebar.markdown("###  Model Performance")
 try:
     img_cm = Image.open('visualizations/final_confusion_matrix.png')
     st.sidebar.image(img_cm, caption='Confusion Matrix', use_container_width=True)
@@ -81,7 +81,7 @@ try:
 except Exception:
     st.sidebar.warning("Visualizations not found. Run train_model.py first.")
 
-st.sidebar.markdown("### 🎯 Features")
+st.sidebar.markdown("###  Features")
 st.sidebar.markdown(
     "- Real-time predictions\n"
     "- 90.15% accuracy\n"
@@ -94,16 +94,16 @@ st.sidebar.markdown("**GitHub:** [View Repository](https://github.com/officialra
 st.sidebar.markdown("**Project:** GenAI Capstone - Milestone 1")
 
 
-# ── Main UI ───────────────────────────────────────────────────────────────────
+#  Main UI 
 def main():
-    st.title("💳 Credit Risk Scoring System")
+    st.title(" Credit Risk Scoring System")
     st.markdown("### Predict loan repayment probability using Machine Learning")
     st.markdown("---")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("👤 Personal Information")
+        st.subheader(" Personal Information")
         age = st.number_input("Age", min_value=18, max_value=100, value=35)
         gender = st.selectbox("Gender", ["Male", "Female", "Other"])
         marital_status = st.selectbox("Marital Status", ["Single", "Married", "Divorced", "Widowed"])
@@ -111,7 +111,7 @@ def main():
         employment_status = st.selectbox("Employment Status", ["Employed", "Self-employed", "Unemployed", "Student", "Retired"])
 
     with col2:
-        st.subheader("💰 Financial Information")
+        st.subheader(" Financial Information")
         annual_income = st.number_input("Annual Income ($)", min_value=0, value=50000)
         monthly_income = annual_income / 12
         debt_to_income_ratio = st.slider("Debt-to-Income Ratio", 0.0, 1.0, 0.15, 0.01)
@@ -125,7 +125,7 @@ def main():
     col3, col4 = st.columns(2)
 
     with col3:
-        st.subheader("🏦 Loan Details")
+        st.subheader(" Loan Details")
         loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=15000)
         loan_purpose = st.selectbox("Loan Purpose", [
             "Debt consolidation", "Car", "Home", "Business",
@@ -145,7 +145,7 @@ def main():
         ])
 
     with col4:
-        st.subheader("📊 Credit History")
+        st.subheader(" Credit History")
         delinquency_history = st.number_input("Delinquency History", min_value=0, value=0)
         public_records = st.number_input("Public Records", min_value=0, value=0)
         num_of_delinquencies = st.number_input("Number of Delinquencies", min_value=0, value=0)
@@ -154,7 +154,7 @@ def main():
 
     _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
-        predict_button = st.button("🔍 Assess Credit Risk", use_container_width=True)
+        predict_button = st.button(" Assess Credit Risk", use_container_width=True)
 
     if predict_button:
         input_data = {
@@ -189,17 +189,17 @@ def main():
         col_result1, col_result2 = st.columns(2)
         with col_result1:
             if prediction == 1:
-                st.success("✅ LOW RISK - Loan Likely to be Paid Back")
+                st.success(" LOW RISK - Loan Likely to be Paid Back")
                 st.balloons()
             else:
-                st.error("⚠️ HIGH RISK - Loan Default Likely")
+                st.error(" HIGH RISK - Loan Default Likely")
 
         with col_result2:
             st.metric("Repayment Probability", f"{probability[1]*100:.2f}%")
             st.metric("Default Probability", f"{probability[0]*100:.2f}%")
 
     st.markdown("---")
-    st.markdown("### 📊 Model Information")
+    st.markdown("###  Model Information")
     col_info1, col_info2, col_info3, col_info4 = st.columns(4)
     with col_info1:
         st.metric("Training Samples", "20,000")

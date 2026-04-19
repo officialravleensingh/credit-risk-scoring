@@ -149,8 +149,8 @@ def compare_models():
     best_model = models_results[best_model_name]['model']
     plot_feature_importance(best_model, X.columns.tolist())
     
-    print(f"\n✓ Best Model: {best_model_name}")
-    print(f"✓ All visualizations saved to 'visualizations/' folder")
+    print(f"\n Best Model: {best_model_name}")
+    print(f" All visualizations saved to 'visualizations/' folder")
     print("\nComparison complete!")
 
 if __name__ == "__main__":
