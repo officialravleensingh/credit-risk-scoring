@@ -1,469 +1,268 @@
-#  Intelligent Credit Risk Scoring System
+# Intelligent Credit Risk Scoring & Agentic Lending Decision Support
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red.svg)](https://streamlit.io/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3-orange.svg)](https://scikit-learn.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-0.1-purple.svg)](https://github.com/langchain-ai/langgraph)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Automated credit risk prediction system using classical machine learning to assess loan repayment probability with **90.15% accuracy**.
+An end-to-end credit analytics system: **Milestone 1** uses classical machine learning to predict loan repayment with **90.15% accuracy**. **Milestone 2** extends this into an agentic AI lending advisor that autonomously reasons about borrower risk, retrieves financial regulations via RAG, and generates structured credit assessment reports.
 
 🔗 **[Live Demo](https://credit-riskscoring.streamlit.app)** | 📂 **[GitHub Repository](https://github.com/officialravleensingh/credit-risk-scoring)**
 
 ---
 
-##  Table of Contents
+## Table of Contents
 
 - [Project Overview](#project-overview)
-- [Problem Statement](#problem-statement)
+- [Milestone 1: ML Credit Risk Scoring](#milestone-1-ml-credit-risk-scoring)
+- [Milestone 2: Agentic Lending Advisor](#milestone-2-agentic-lending-advisor)
 - [Dataset](#dataset)
 - [Model Performance](#model-performance)
-- [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
-- [Methodology](#methodology)
-- [Visualizations](#visualizations)
 - [Team](#team)
-- [Future Work](#future-work)
 
 ---
 
-##  Project Overview
+## Project Overview
 
-This project implements an intelligent credit risk assessment system that predicts the likelihood of loan repayment based on comprehensive borrower information. Traditional manual credit evaluation processes are time-consuming and prone to human bias. Our system automates this process using machine learning trained on **20,000 historical loan applications**, enabling faster and more reliable lending decisions.
+Financial institutions face significant challenges in evaluating loan applications — manual assessment is slow, prone to bias, and difficult to scale. This project delivers a two-phase solution:
 
-### Key Achievements
--  **90.15% Accuracy** with Random Forest model
--  **0.8759 ROC-AUC Score** demonstrating excellent discrimination
--  **Real-time predictions** through interactive web interface
--  **Comprehensive model comparison** (Logistic Regression, Decision Tree, Random Forest)
--  **Production-ready deployment** on Streamlit Cloud
+| Phase | Approach | Key Output |
+|-------|----------|------------|
+| **Milestone 1** | Classical ML (Random Forest) | Risk score + probability |
+| **Milestone 2** | Agentic AI (LangGraph + RAG) | Structured lending report with regulatory references |
 
 ---
 
-##  Problem Statement
+## Milestone 1: ML Credit Risk Scoring
 
-Financial institutions face significant challenges in evaluating loan applications:
+### Key Results
 
-| Challenge | Impact |
-|-----------|--------|
-| **Manual Assessment** | Slow, taking days or weeks per application |
-| **Human Bias** | Inconsistent decisions across loan officers |
-| **Scalability** | Difficulty processing large volumes efficiently |
-| **Transparency** | Lack of clear decision criteria |
+| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
+|-------|----------|-----------|--------|----------|---------:|
+| **Random Forest** ⭐ | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
+| Logistic Regression | 88.78% | 0.8995 | 0.9678 | 0.9324 | 0.8515 |
+| Decision Tree | 88.52% | 0.8983 | 0.9659 | 0.9309 | 0.8406 |
 
-**Our Solution:** An automated, data-driven approach to credit risk assessment that delivers consistent, unbiased predictions in real-time.
+### Confusion Matrix (Random Forest)
+
+```
+                  Predicted
+              Default  Paid Back
+Actual Default    425       375
+   Paid Back       19      3181
+```
+
+### Top Features by Importance
+
+1. Credit Score — 54.9%
+2. Delinquency History — 11.4%
+3. Debt-to-Income Ratio — 7.5%
+4. Annual Income — 4.7%
+5. Interest Rate — 2.9%
+
+### Visualizations
+
+<p align="center">
+  <img src="visualizations/confusion_matrices.png" alt="Confusion Matrices" width="800"/>
+  <br><em>Figure 1: Confusion Matrices — all three models</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/roc_curves.png" alt="ROC Curves" width="600"/>
+  <br><em>Figure 2: ROC Curves — Random Forest achieves highest AUC</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/metrics_comparison.png" alt="Metrics Comparison" width="700"/>
+  <br><em>Figure 3: Performance Metrics Comparison</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/final_confusion_matrix.png" alt="Final Confusion Matrix" width="500"/>
+  <br><em>Figure 4: Random Forest Confusion Matrix — 90.15% Accuracy</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/final_roc_curve.png" alt="Final ROC Curve" width="500"/>
+  <br><em>Figure 5: Random Forest ROC Curve — AUC = 0.8759</em>
+</p>
+
+<p align="center">
+  <img src="visualizations/final_feature_importance.png" alt="Feature Importance" width="600"/>
+  <br><em>Figure 6: Top 10 Most Important Features</em>
+</p>
 
 ---
 
-##  Dataset
+## Milestone 2: Agentic Lending Advisor
 
-### Overview
+### Architecture
+
+The agentic system uses a **LangGraph** workflow with three sequential nodes:
+
+```
+START → [Risk Analyzer] → [Regulation Retriever] → [Report Generator] → END
+```
+
+| Node | Role |
+|------|------|
+| **Risk Analyzer** | Evaluates borrower profile using ML output and computes derived risk metrics |
+| **Regulation Retriever** | Queries a FAISS vector index of financial regulations (RAG) |
+| **Report Generator** | Produces a structured 4-section lending assessment report |
+
+### Structured Output
+
+Every assessment produces a report with four sections:
+
+1. **Borrower Profile & Risk Analysis** — Summary of key risk drivers
+2. **Lending Decision** — APPROVE or DECLINE with justification
+3. **Regulatory References** — Relevant guidelines (Basel III, CFPB, ECOA, Dodd-Frank, etc.)
+4. **Legal Disclaimer** — Required compliance notice
+
+### RAG Knowledge Base
+
+The regulation retriever uses FAISS + SentenceTransformers (`all-MiniLM-L6-v2`) to retrieve relevant sections from a curated knowledge base covering:
+
+- Basel III capital requirements
+- CFPB debt-to-income guidelines
+- Credit score thresholds (FICO)
+- Fair lending laws (ECOA, FHA, CRA)
+- Delinquency and default standards (CECL)
+- Ability-to-Repay rule (Dodd-Frank)
+- Five Cs of Credit framework
+
+---
+
+## Dataset
 
 | Attribute | Value |
 |-----------|-------|
 | **Total Samples** | 20,000 loan applications |
-| **Features** | 21 input features + 1 target variable |
-| **Target Variable** | `loan_paid_back` (1 = paid, 0 = defaulted) |
+| **Features** | 21 input features + 1 target |
+| **Target** | `loan_paid_back` (1 = paid, 0 = defaulted) |
 | **Class Distribution** | 79.99% paid back, 20.01% defaulted |
-| **Missing Values** | None (clean dataset) |
-| **Data Quality** | High - no imputation required |
+| **Missing Values** | None |
 
-### Feature Categories
-
-<table>
-<tr>
-<td width="50%">
-
-** Demographics**
-- age
-- gender
-- marital_status
-- education_level
-
-** Financial Information**
-- annual_income
-- monthly_income
-- debt_to_income_ratio
-- credit_score
-- num_of_open_accounts
-- total_credit_limit
-- current_balance
-
-</td>
-<td width="50%">
-
-** Loan Details**
-- loan_amount
-- loan_purpose
-- interest_rate
-- loan_term
-- installment
-- grade_subgrade
-
-** Credit History**
-- employment_status
-- delinquency_history
-- public_records
-- num_of_delinquencies
-
-</td>
-</tr>
-</table>
-
-### Key Insights from EDA
-
-1. **Credit Score** - Strongest predictor of loan repayment
-2. **Delinquency History** - Strong negative correlation with repayment
-3. **Debt-to-Income Ratio** - Critical risk indicator
-4. **Employment Status** - Employed borrowers show higher repayment rates
-5. **Public Records** - Significant impact on default probability
+**Feature Categories:** Demographics (4) · Financial (7) · Loan Details (6) · Credit History (4)
 
 ---
 
-##  Model Performance
-
-### Model Comparison Results
-
-| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
-|-------|----------|-----------|--------|----------|---------|
-| **Random Forest**  | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
-| Logistic Regression | 88.78% | 0.8995 | 0.9678 | 0.9324 | 0.8515 |
-| Decision Tree | 88.52% | 0.8983 | 0.9659 | 0.9309 | 0.8406 |
-
- **Best Model: Random Forest** - Selected for deployment
-
-### Detailed Performance (Random Forest)
-
-| Metric | Default (0) | Paid Back (1) |
-|--------|-------------|---------------|
-| **Precision** | 0.96 | 0.89 |
-| **Recall** | 0.53 | 0.99 |
-| **F1-Score** | 0.68 | 0.94 |
-| **Support** | 800 | 3,200 |
-
-### Confusion Matrix
-
-```
-                Predicted
-              Default  Paid Back
-Actual Default    425       375
-    Paid Back      19      3181
-```
-
-**Interpretation:**
-- **True Positives (Paid Back):** 3,181 (99% recall)
-- **True Negatives (Default):** 425 (53% recall)
-- **False Positives:** 375 (conservative - better for risk management)
-- **False Negatives:** 19 (minimal - only 0.6% of paid-back loans misclassified)
-
----
-
-##  Features
-
-### Core Capabilities
--  **Automated Risk Assessment** - Instant credit risk evaluation
--  **Multi-Model Comparison** - Tested 3 ML algorithms
--  **Real-time Predictions** - Sub-second response time
--  **Visual Analytics** - Confusion matrices, ROC curves, feature importance
--  **Cloud Deployment** - Accessible worldwide 24/7
--  **Bias-Free Decisions** - Consistent evaluation criteria
-
-### Technical Features
-- Custom data preprocessing pipeline
-- Label encoding for 6 categorical features
-- Standard scaling for numerical features
-- Stratified train-test split (80-20)
-- Feature importance analysis
-- Model performance visualization
-
----
-
-##  Tech Stack
+## Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
 | **Language** | Python 3.13 |
-| **ML Framework** | scikit-learn 1.3.0 |
-| **Data Processing** | pandas 2.1.0, numpy 1.26.0 |
-| **Visualization** | matplotlib 3.7.0, seaborn 0.12.0 |
-| **Web Framework** | Streamlit 1.28.0 |
+| **ML Framework** | scikit-learn 1.3 |
+| **Data Processing** | pandas 2.1, numpy 1.26 |
+| **Visualization** | matplotlib 3.7, seaborn 0.12 |
+| **Agent Framework** | LangGraph 0.1 |
+| **LLM** | Llama 3.3 70B via Groq (free tier) |
+| **RAG** | FAISS + SentenceTransformers |
+| **Web Framework** | Streamlit 1.28 |
 | **Deployment** | Streamlit Cloud |
-| **Version Control** | Git, GitHub |
-| **Model Storage** | Python modules (.py format) |
 
 ---
 
-##  Installation
+## Installation
 
-### Prerequisites
-- Python 3.13 or higher
-- pip package manager
-
-### Steps
-
-1. **Clone the repository**
 ```bash
 git clone https://github.com/officialravleensingh/credit-risk-scoring.git
 cd credit-risk-scoring
-```
-
-2. **Install dependencies**
-```bash
 pip install -r requirements.txt
 ```
 
-3. **Verify installation**
+For Milestone 2, set your Groq API key (free at [console.groq.com](https://console.groq.com)):
+
 ```bash
-python --versions
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY
 ```
 
 ---
 
-##  Usage
+## Usage
 
 ### 1. Train the Model
-
 ```bash
 python train_model.py
 ```
 
-**Output:**
-- Trains Random Forest model
-- Generates performance metrics
-- Creates visualizations in `visualizations/` folder
-- Saves model parameters to `models/model_params.py`
-
 ### 2. Compare Models
-
 ```bash
 python compare_models.py
 ```
 
-**Output:**
-- Compares Logistic Regression, Decision Tree, and Random Forest
-- Generates comparison visualizations
-- Displays performance table
-
-### 3. Run Web Application
-
+### 3. Run the Application
 ```bash
 streamlit run app.py
 ```
 
-**Access:** Open browser at `http://localhost:8501`
-
-### 4. Using the Application
-
-**Step 1:** Enter borrower information
-- Personal Information (age, gender, education, etc.)
-- Financial Information (income, credit score, etc.)
-- Loan Details (amount, purpose, interest rate, etc.)
-- Credit History (delinquencies, public records, etc.)
-
-**Step 2:** Click "Assess Credit Risk"
-
-**Step 3:** View results
-- Risk classification (Low Risk / High Risk)
-- Probability scores
-- Visual indicators
+The app has two pages:
+- **Credit Risk Scoring** (`app.py`) — ML-based risk prediction
+- **Lending Advisor** (`pages/lending_advisor.py`) — Agentic AI assessment with regulatory report
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```
 credit-risk-scoring/
-├── app.py                          # Streamlit web application
-├── train_model.py                  # Model training script (Random Forest)
+├── app.py                          # Streamlit main page (Milestone 1)
+├── train_model.py                  # Random Forest training script
 ├── compare_models.py               # Model comparison script
+├── agent/
+│   ├── __init__.py
+│   ├── state.py                    # LangGraph state definition
+│   ├── nodes.py                    # Agent nodes (risk analyzer, retriever, reporter)
+│   ├── graph.py                    # LangGraph workflow assembly
+│   └── rag.py                      # FAISS retrieval module
+├── data/
+│   └── regulations.txt             # Financial regulations knowledge base
+├── pages/
+│   └── lending_advisor.py          # Streamlit page (Milestone 2)
 ├── utils/
 │   └── preprocessing.py            # Data preprocessing functions
 ├── models/
 │   └── model_params.py             # Trained model parameters
 ├── dataset/
-│   └── original_dataset.csv        # Training data (20,000 samples)
-├── visualizations/                 # Generated visualizations
-│   ├── confusion_matrices.png      # All models confusion matrices
-│   ├── roc_curves.png              # ROC curves comparison
-│   ├── metrics_comparison.png      # Performance metrics chart
-│   ├── feature_importance.png      # Feature importance chart
-│   ├── final_confusion_matrix.png  # Final model confusion matrix
-│   ├── final_roc_curve.png         # Final model ROC curve
-│   └── final_feature_importance.png # Final model feature importance
+│   └── original_dataset.csv        # 20,000 loan applications
+├── visualizations/                 # Generated charts (7 PNG files)
 ├── notebooks/
 │   └── eda.ipynb                   # Exploratory data analysis
-├── requirements.txt                # Python dependencies
-├── .gitignore                      # Git ignore rules
-└── README.md                       # Project documentation
+├── requirements.txt
+├── .env.example                    # Environment variable template
+├── .gitignore
+└── README.md
 ```
 
 ---
 
-##  Methodology
-
-### 1. Data Preprocessing
-
-**Categorical Encoding:**
-- Applied Label Encoding to 6 categorical features
-- Converted text categories to numerical values
-
-**Feature Scaling:**
-- Used StandardScaler for all numerical features
-- Formula: `z = (x - μ) / σ`
-- Ensures equal contribution from all features
-
-**Train-Test Split:**
-- 80% training (16,000 samples)
-- 20% testing (4,000 samples)
-- Stratified split to maintain class distribution
-
-### 2. Model Selection & Training
-
-**Models Evaluated:**
-1. **Logistic Regression** - Baseline linear model
-2. **Decision Tree** - Non-linear decision boundaries
-3. **Random Forest** - Ensemble of decision trees (WINNER)
-
-**Hyperparameters (Random Forest):**
-- `n_estimators`: 100 trees
-- `max_depth`: 10 levels
-- `random_state`: 42 (reproducibility)
-- `n_jobs`: -1 (parallel processing)
-
-### 3. Model Evaluation
-
-**Metrics Used:**
-- Accuracy - Overall correctness
-- Precision - Positive prediction reliability
-- Recall - True positive detection rate
-- F1-Score - Harmonic mean of precision and recall
-- ROC-AUC - Discrimination capability
-
-**Validation Strategy:**
-- Stratified K-Fold cross-validation
-- Confusion matrix analysis
-- ROC curve visualization
-
-### 4. Deployment
-
-**Architecture:**
-- Model parameters stored as Python module
-- Streamlit web interface for user interaction
-- Cloud deployment on Streamlit Cloud
-- Real-time prediction engine
-
----
-
-##  Visualizations
-
-### Model Comparison
-
-<p align="center">
-  <img src="visualizations/confusion_matrices.png" alt="Confusion Matrices" width="800"/>
-  <br>
-  <em>Figure 1: Confusion Matrices for all three models</em>
-</p>
-
-<p align="center">
-  <img src="visualizations/roc_curves.png" alt="ROC Curves" width="600"/>
-  <br>
-  <em>Figure 2: ROC Curves Comparison - Random Forest achieves highest AUC</em>
-</p>
-
-<p align="center">
-  <img src="visualizations/metrics_comparison.png" alt="Metrics Comparison" width="700"/>
-  <br>
-  <em>Figure 3: Performance Metrics Comparison across all models</em>
-</p>
-
-### Best Model (Random Forest)
-
-<p align="center">
-  <img src="visualizations/final_confusion_matrix.png" alt="Final Confusion Matrix" width="500"/>
-  <br>
-  <em>Figure 4: Random Forest Confusion Matrix - 90.15% Accuracy</em>
-</p>
-
-<p align="center">
-  <img src="visualizations/final_roc_curve.png" alt="Final ROC Curve" width="500"/>
-  <br>
-  <em>Figure 5: Random Forest ROC Curve - AUC = 0.8759</em>
-</p>
-
-<p align="center">
-  <img src="visualizations/final_feature_importance.png" alt="Feature Importance" width="600"/>
-  <br>
-  <em>Figure 6: Top 10 Most Important Features</em>
-</p>
-
-All visualizations are automatically generated during training and displayed in the Streamlit app sidebar.
-
----
-
-##  Team
+## Team
 
 | Name | Role | Contributions |
 |------|------|---------------|
-| **Ravleen Singh** | Project Lead | Model development, training pipeline, deployment, integration |
-| **Anurag Pandey** | Data Engineer | Data Preprocessing, Feature Engineering, Categorical Encoding |
-| **Ansh Tomar** | Data Analyst | EDA, Visualization, Documentation, Insights Generation |
-| **Himanshu Chauhan** | Frontend Developer | UI development, Streamlit app design, testing, UX optimization |
+| **Ravleen Singh** | Project Lead | Model development, agent architecture, deployment, integration |
+| **Anurag Pandey** | Data Engineer | Data preprocessing, feature engineering, RAG knowledge base |
+| **Ansh Tomar** | Data Analyst | EDA, visualization, documentation, regulatory research |
+| **Himanshu Chauhan** | Frontend Developer | UI development, Streamlit pages, testing, UX |
 
 ---
 
-##  Future Work
+## Evaluation Criteria Alignment
 
-### Planned Enhancements
-
-1. **Advanced Models**
-   - Implement XGBoost and LightGBM
-   - Neural network architectures
-   - Ensemble stacking methods
-
-2. **Explainability**
-   - SHAP values for individual predictions
-   - LIME for local interpretability
-   - Feature contribution visualization
-
-3. **Features**
-   - Time-series analysis of borrower behavior
-   - Alternative credit scoring (social media, utility bills)
-   - Batch prediction capability
-
-4. **Integration**
-   - REST API development
-   - Banking system integration
-   - Real-time monitoring dashboard
-
-5. **Optimization**
-   - Model compression for faster inference
-   - A/B testing framework
-   - Automated retraining pipeline
+| Component | Milestone 1 (25%) | Milestone 2 (30%) |
+|-----------|-------------------|-------------------|
+| Technical Implementation | ✅ 3 ML models, preprocessing pipeline | ✅ LangGraph agent, RAG integration |
+| GitHub & Code Quality | ✅ Modular code, meaningful commits | ✅ Separate agent/RAG modules |
+| Hosted Demo | ✅ Streamlit Cloud | ✅ Same deployment, new page |
+| Project Report | ✅ LaTeX format | ✅ Updated with agentic workflow |
+| Responsible AI | ✅ Bias-free ML | ✅ ECOA compliance, legal disclaimer |
 
 ---
 
-##  License
-
-This project is part of the **GenAI Capstone Project** at Newton School of Technology.
-
----
-
-##  Acknowledgments
-
-- **Newton School of Technology** - Project guidance and support
-- **Streamlit** - Deployment platform
-- **scikit-learn** - Machine learning framework
-- **Dataset Source** - Synthetic credit risk data
-
----
-
-##  Contact
-
-- **GitHub:** [officialravleensingh](https://github.com/officialravleensingh)
-- **Live Demo:** [credit-riskscoring.streamlit.app](https://credit-riskscoring.streamlit.app)
-- **Project Type:** Classical Machine Learning
-- **Institution:** Newton School of Technology
-- **Date:** February 2026
----
+**Institution:** Newton School of Technology | **Project:** GenAI Capstone | **Date:** 2026
