@@ -3,8 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from models.model_params import (
-    feature_importances, scaler_mean, scaler_scale,
-    label_encoders, accuracy, roc_auc,
+    feature_importances, label_encoders, accuracy, roc_auc,
     n_estimators, max_depth, random_state
 )
 from PIL import Image
@@ -22,7 +21,7 @@ FEATURE_ORDER = [
 CATEGORICAL_COLS = ['gender', 'marital_status', 'education_level', 'employment_status', 'loan_purpose', 'grade_subgrade']
 
 @st.cache_resource
-def load_model():
+def load_model_and_scaler():
     from utils.preprocessing import load_data, preprocess_data, prepare_features
     from sklearn.preprocessing import StandardScaler
     from sklearn.model_selection import train_test_split
@@ -40,7 +39,7 @@ def load_model():
         random_state=random_state, n_jobs=-1
     )
     model.fit(X_train_scaled, y_train)
-    return model
+    return model, scaler
 
 def predict_credit_risk(input_data):
     input_df = pd.DataFrame([input_data])
@@ -49,9 +48,9 @@ def predict_credit_risk(input_data):
         input_df[col] = label_encoders[col][input_df[col].iloc[0]]
 
     input_array = input_df[FEATURE_ORDER].values.astype(float)
-    input_scaled = (input_array - scaler_mean) / scaler_scale
 
-    model = load_model()
+    model, scaler = load_model_and_scaler()
+    input_scaled = scaler.transform(input_array)
     prediction = model.predict(input_scaled)[0]
     probability = model.predict_proba(input_scaled)[0]
     return prediction, probability
