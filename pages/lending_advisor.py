@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from models.model_params import (
-    scaler_mean, scaler_scale, label_encoders,
+    label_encoders,
     n_estimators, max_depth, random_state
 )
 
@@ -27,7 +27,7 @@ CATEGORICAL_COLS = ['gender', 'marital_status', 'education_level', 'employment_s
 
 
 @st.cache_resource
-def load_model():
+def load_model_and_scaler():
     from utils.preprocessing import load_data, preprocess_data, prepare_features
     df = load_data()
     df_processed, _ = preprocess_data(df)
@@ -37,7 +37,7 @@ def load_model():
     X_train_scaled = scaler.fit_transform(X_train)
     model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=random_state, n_jobs=-1)
     model.fit(X_train_scaled, y_train)
-    return model
+    return model, scaler
 
 
 def get_ml_prediction(input_data: dict):
@@ -45,8 +45,8 @@ def get_ml_prediction(input_data: dict):
     for col in CATEGORICAL_COLS:
         input_df[col] = label_encoders[col][input_df[col].iloc[0]]
     input_array = input_df[FEATURE_ORDER].values.astype(float)
-    input_scaled = (input_array - scaler_mean) / scaler_scale
-    model = load_model()
+    model, scaler = load_model_and_scaler()
+    input_scaled = scaler.transform(input_array)
     prediction = int(model.predict(input_scaled)[0])
     probability = model.predict_proba(input_scaled)[0]
     return prediction, float(probability[1]), float(probability[0])
@@ -186,12 +186,27 @@ if run_button:
     status = st.empty()
 
     try:
-        from agent.graph import run_lending_agent
+        from agent.nodes import risk_analyzer_node, regulation_retriever_node, report_generator_node
+        from agent.state import AgentState
+
+        state = {'borrower': borrower_data, 'risk_summary': None,
+                 'retrieved_regulations': None, 'final_report': None, 'messages': []}
 
         status.info("🧠 Step 1/3 — Risk Analyzer: Evaluating borrower profile...")
-        progress.progress(10)
+        progress.progress(15)
+        state.update(risk_analyzer_node(state))
 
-        result = run_lending_agent(borrower_data)
+        status.info("📜 Step 2/3 — Regulation Retriever: Fetching relevant guidelines...")
+        progress.progress(50)
+        state.update(regulation_retriever_node(state))
+
+        status.info("📋 Step 3/3 — Report Generator: Producing structured assessment...")
+        progress.progress(80)
+        state.update(report_generator_node(state))
+
+        result = {'risk_summary': state['risk_summary'],
+                  'retrieved_regulations': state['retrieved_regulations'],
+                  'final_report': state['final_report']}
 
         progress.progress(100)
         status.success("✅ Assessment complete!")

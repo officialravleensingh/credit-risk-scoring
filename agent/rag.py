@@ -29,11 +29,13 @@ def get_retriever():
     if _index is not None:
         return _embedder, _index, _chunks
 
-    regulations_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'regulations.txt')
-    regulations_path = os.path.normpath(regulations_path)
+    # Try __file__-relative path first, fall back to cwd-relative path
+    candidate = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'data', 'regulations.txt'))
+    if not os.path.exists(candidate):
+        candidate = os.path.join('data', 'regulations.txt')
 
     _embedder = SentenceTransformer('all-MiniLM-L6-v2')
-    _chunks = _load_regulations(regulations_path)
+    _chunks = _load_regulations(candidate)
     _index = _build_index(_chunks, _embedder)
 
     return _embedder, _index, _chunks
