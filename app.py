@@ -20,6 +20,15 @@ FEATURE_ORDER = [
 
 CATEGORICAL_COLS = ['gender', 'marital_status', 'education_level', 'employment_status', 'loan_purpose', 'grade_subgrade']
 
+
+def _encode_categorical_value(column_name, value):
+    mapping = label_encoders.get(column_name, {})
+    if value in mapping:
+        return mapping[value]
+    if 'Other' in mapping:
+        return mapping['Other']
+    return next(iter(mapping.values()), 0)
+
 @st.cache_resource
 def load_model_and_scaler():
     from utils.preprocessing import load_data, preprocess_data, prepare_features
@@ -45,7 +54,7 @@ def predict_credit_risk(input_data):
     input_df = pd.DataFrame([input_data])
 
     for col in CATEGORICAL_COLS:
-        input_df[col] = label_encoders[col][input_df[col].iloc[0]]
+        input_df[col] = _encode_categorical_value(col, input_df[col].iloc[0])
 
     input_array = input_df[FEATURE_ORDER].values.astype(float)
 
