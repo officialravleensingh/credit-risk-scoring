@@ -1,8 +1,12 @@
 import streamlit as st
 import sys
 import os
+from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Load environment variables from .env
+load_dotenv()
 
 import numpy as np
 import pandas as pd
@@ -86,12 +90,17 @@ st.title(" Agentic Lending Decision Support")
 st.markdown("### AI-powered credit assessment with regulatory compliance")
 st.markdown("---")
 
-groq_key = st.text_input(
-    " Groq API Key",
-    type="password",
-    placeholder="Enter your Groq API key (free at console.groq.com)",
-    help="Required to run the AI agent. Your key is never stored."
-)
+# Load Groq API key from .env
+groq_key = os.getenv('GROQ_API_KEY')
+
+if not groq_key:
+    st.error(
+        "⚠️ **GROQ_API_KEY not found in .env file**\n\n"
+        "Please create a `.env` file in the project root with:\n"
+        "```\nGROQ_API_KEY=your_api_key_here\n```\n"
+        "Get a free API key at: https://console.groq.com"
+    )
+    st.stop()
 
 st.markdown("---")
 
@@ -148,10 +157,6 @@ with col_btn:
     run_button = st.button(" Generate Lending Assessment", use_container_width=True)
 
 if run_button:
-    if not groq_key:
-        st.error("Please enter your Groq API key to run the agent.")
-        st.stop()
-
     os.environ['GROQ_API_KEY'] = groq_key
 
     input_data = {
