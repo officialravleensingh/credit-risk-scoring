@@ -90,15 +90,23 @@ st.title(" Agentic Lending Decision Support")
 st.markdown("### AI-powered credit assessment with regulatory compliance")
 st.markdown("---")
 
-# Load Groq API key from .env
-groq_key = os.getenv('GROQ_API_KEY')
+# Load Groq API key - try Streamlit secrets first (for Cloud), then .env (for local development)
+try:
+    groq_key = st.secrets["GROQ_API_KEY"]
+except KeyError:
+    groq_key = os.getenv('GROQ_API_KEY')
 
 if not groq_key:
     st.error(
-        "⚠️ **GROQ_API_KEY not found in .env file**\n\n"
-        "Please create a `.env` file in the project root with:\n"
-        "```\nGROQ_API_KEY=your_api_key_here\n```\n"
-        "Get a free API key at: https://console.groq.com"
+        "⚠️ **GROQ_API_KEY not configured**\n\n"
+        "**For local development:**\n"
+        "Create a `.env` file in project root:\n"
+        "```\nGROQ_API_KEY=your_api_key_here\n```\n\n"
+        "**For Streamlit Cloud:**\n"
+        "Add secret in Streamlit Cloud settings:\n"
+        "1. Go to app settings → Secrets\n"
+        "2. Add: `GROQ_API_KEY=your_api_key_here`\n\n"
+        "Get free API key: https://console.groq.com"
     )
     st.stop()
 
