@@ -232,7 +232,7 @@ def main():
     ax.text(
         8,
         0.18,
-        "Deployment: Streamlit Cloud | Repository: github.com/officialravleensingh/credit-risk-scoring",
+        "Deployment: Streamlit Cloud | Repository: github.com/ravleensingh/credit-risk-scoring",
         ha="center",
         va="bottom",
         fontsize=8.5,

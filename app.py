@@ -90,7 +90,7 @@ st.sidebar.markdown(
 )
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Developed by:** Ravleen Singh, Anurag Pandey, Ansh Tomar, Himanshu Chauhan")
-st.sidebar.markdown("**GitHub:** [View Repository](https://github.com/officialravleensingh/credit-risk-scoring)")
+st.sidebar.markdown("**GitHub:** [View Repository](https://github.com/ravleensingh/credit-risk-scoring)")
 st.sidebar.markdown("**Project:** GenAI Capstone - Milestone 1")
 
 

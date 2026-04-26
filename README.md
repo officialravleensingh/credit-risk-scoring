@@ -8,7 +8,7 @@
 
 An end-to-end credit analytics system: **Milestone 1** uses classical machine learning to predict loan repayment with **90.15% accuracy**. **Milestone 2** extends this into an agentic AI lending advisor that autonomously reasons about borrower risk, retrieves financial regulations via RAG, and generates structured credit assessment reports.
 
- **[Live Demo](https://credit-riskscoring.streamlit.app)** |  **[GitHub Repository](https://github.com/officialravleensingh/credit-risk-scoring)**
+ **[Live Demo](https://credit-riskscoring.streamlit.app)** |  **[GitHub Repository](https://github.com/ravleensingh/credit-risk-scoring)**
 
 ---
 
@@ -169,7 +169,7 @@ The regulation retriever uses FAISS + SentenceTransformers (`all-MiniLM-L6-v2`) 
 ## Installation
 
 ```bash
-git clone https://github.com/officialravleensingh/credit-risk-scoring.git
+git clone https://github.com/ravleensingh/credit-risk-scoring.git
 cd credit-risk-scoring
 pip install -r requirements.txt
 ```
