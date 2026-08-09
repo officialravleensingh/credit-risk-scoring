@@ -1,170 +1,125 @@
 # Intelligent Credit Risk Scoring & Agentic Lending Decision Support
 
-[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28-red.svg)](https://streamlit.io/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3-orange.svg)](https://scikit-learn.org/)
-[![LangGraph](https://img.shields.io/badge/LangGraph-0.1-purple.svg)](https://github.com/langchain-ai/langgraph)
+[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-App-red.svg)](https://streamlit.io/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-orange.svg)](https://scikit-learn.org/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Agent%20Workflow-purple.svg)](https://github.com/langchain-ai/langgraph)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-An end-to-end credit analytics system: **Milestone 1** uses classical machine learning to predict loan repayment with **90.15% accuracy**. **Milestone 2** extends this into an agentic AI lending advisor that autonomously reasons about borrower risk, retrieves financial regulations via RAG, and generates structured credit assessment reports.
+An end-to-end credit analytics project that combines classical machine learning with an agentic lending assistant. The system predicts repayment likelihood from structured borrower data, then extends that prediction into a lending assessment workflow with retrieved regulatory context and a structured decision report.
 
- **[Live Demo](https://credit-riskscoring.streamlit.app)** |  **[GitHub Repository](https://github.com/ravleensingh/credit-risk-scoring)**
+[Live Demo](https://credit-riskscoring.streamlit.app) | [GitHub Repository](https://github.com/ravleensingh/credit-risk-scoring)
 
----
+## Overview
 
-## Table of Contents
+- Milestone 1: a Random Forest credit-risk model for repayment/default prediction.
+- Milestone 2: a LangGraph-based lending advisor that adds risk reasoning, regulation retrieval, and report generation.
+- Dataset size: 20,000 loan applications.
+- Input features: 21 borrower and loan attributes.
+- Target: `loan_paid_back` where `1 = paid back` and `0 = defaulted`.
 
-- [Project Overview](#project-overview)
-- [Milestone 1: ML Credit Risk Scoring](#milestone-1-ml-credit-risk-scoring)
-- [Milestone 2: Agentic Lending Advisor](#milestone-2-agentic-lending-advisor)
-- [Dataset](#dataset)
-- [Model Performance](#model-performance)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Team](#team)
+## Final Status
 
----
+- The ML pipeline has been refactored into a shared sklearn workflow used consistently by training scripts and both Streamlit pages.
+- The advisor retrieval layer now supports semantic retrieval when the local embedding model is available and falls back to TF-IDF retrieval in offline or restricted environments.
+- The UI now accepts more realistic custom inputs and warns when a prediction is outside the model's observed training ranges.
+- Regression tests cover prediction validation, constraint handling, report parsing, retrieval fallback, and corrupt model-artifact recovery.
 
-## Project Overview
+## Model Performance
 
-Financial institutions face significant challenges in evaluating loan applications — manual assessment is slow, prone to bias, and difficult to scale. This project delivers a two-phase solution:
-
-- **Milestone 1:** Classical ML (Random Forest) for repayment/default prediction with risk probabilities.
-- **Milestone 2:** Agentic AI workflow (LangGraph + RAG) for structured lending recommendations with regulatory references.
-
----
-
-## Milestone 1: ML Credit Risk Scoring
-
-### Key Results
+### Validation Results
 
 | Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |-------|----------|-----------|--------|----------|---------:|
-| **Random Forest**  | **90.15%** | **0.8945** | **0.9941** | **0.9417** | **0.8759** |
-| Logistic Regression | 88.78% | 0.8995 | 0.9678 | 0.9324 | 0.8515 |
-| Decision Tree | 88.52% | 0.8983 | 0.9659 | 0.9309 | 0.8406 |
+| **Random Forest** | **89.78%** | **0.8923** | **0.9919** | **0.9395** | **0.8738** |
+| Logistic Regression | 88.67% | 0.9008 | 0.9647 | 0.9316 | 0.8854 |
+| Decision Tree | 89.25% | 0.8948 | 0.9809 | 0.9359 | 0.8561 |
 
-### Confusion Matrix (Random Forest)
+Random Forest remains the deployed model because it gives the strongest overall accuracy with very high recall on paid-back loans, even though Logistic Regression achieved the highest ROC-AUC.
 
-```
+### Random Forest Confusion Matrix
+
+```text
                   Predicted
               Default  Paid Back
-Actual Default    425       375
-   Paid Back       19      3181
+Actual Default    417       383
+   Paid Back       26      3174
 ```
 
-### Top Features by Importance
+### Top Features by Permutation Importance
 
-1. Credit Score — 54.9%
-2. Delinquency History — 11.4%
-3. Debt-to-Income Ratio — 7.5%
-4. Annual Income — 4.7%
-5. Interest Rate — 2.9%
+1. Employment Status — 69.7%
+2. Debt-to-Income Ratio — 17.8%
+3. Credit Score — 8.9%
+4. Interest Rate — 1.0%
+5. Grade/Subgrade — 0.7%
 
-### Visualizations
+## Architecture
 
-<p align="center">
-  <img src="visualizations/confusion_matrices.png" alt="Confusion Matrices" width="800"/>
-  <br><em>Figure 1: Confusion Matrices — all three models</em>
-</p>
+### Credit-Risk App
 
-<p align="center">
-  <img src="visualizations/roc_curves.png" alt="ROC Curves" width="600"/>
-  <br><em>Figure 2: ROC Curves — Random Forest achieves highest AUC</em>
-</p>
+- Input collection through Streamlit forms.
+- Shared sklearn preprocessing and prediction pipeline.
+- Live repayment and default probability prediction.
 
-<p align="center">
-  <img src="visualizations/metrics_comparison.png" alt="Metrics Comparison" width="700"/>
-  <br><em>Figure 3: Performance Metrics Comparison</em>
-</p>
+### Agentic Lending Advisor
 
-<p align="center">
-  <img src="visualizations/final_confusion_matrix.png" alt="Final Confusion Matrix" width="500"/>
-  <br><em>Figure 4: Random Forest Confusion Matrix — 90.15% Accuracy</em>
-</p>
+The advisor uses a three-step LangGraph workflow:
 
-<p align="center">
-  <img src="visualizations/final_roc_curve.png" alt="Final ROC Curve" width="500"/>
-  <br><em>Figure 5: Random Forest ROC Curve — AUC = 0.8759</em>
-</p>
-
-<p align="center">
-  <img src="visualizations/final_feature_importance.png" alt="Feature Importance" width="600"/>
-  <br><em>Figure 6: Top 10 Most Important Features</em>
-</p>
-
----
-
-## Milestone 2: Agentic Lending Advisor
-
-### Architecture
-
-The agentic system uses a **LangGraph** workflow with three sequential nodes:
-
-```
-START → [Risk Analyzer] → [Regulation Retriever] → [Report Generator] → END
+```text
+START -> Risk Analyzer -> Regulation Retriever -> Report Generator -> END
 ```
 
-| Node | Role |
-|------|------|
-| **Risk Analyzer** | Evaluates borrower profile using ML output and computes derived risk metrics |
-| **Regulation Retriever** | Queries a FAISS vector index of financial regulations (RAG) |
-| **Report Generator** | Produces a structured 4-section lending assessment report |
+- Risk Analyzer: summarizes borrower risk drivers using ML output and derived ratios.
+- Regulation Retriever: retrieves relevant regulatory context from a local knowledge base.
+- Report Generator: produces a four-section lending assessment report.
 
-### Structured Output
+### Retrieval Strategy
 
-Every assessment produces a report with four sections:
+- Primary path: FAISS + SentenceTransformers (`all-MiniLM-L6-v2`) when the model is locally available.
+- Fallback path: TF-IDF lexical retrieval when the semantic model or its dependencies are unavailable.
 
-1. **Borrower Profile & Risk Analysis** — Summary of key risk drivers
-2. **Lending Decision** — APPROVE or DECLINE with justification
-3. **Regulatory References** — Relevant guidelines (Basel III, CFPB, ECOA, Dodd-Frank, etc.)
-4. **Legal Disclaimer** — Required compliance notice
+## Streamlit Pages
 
-### RAG Knowledge Base
+- [app.py](app.py): primary credit-risk prediction interface.
+- [pages/lending_advisor.py](pages/lending_advisor.py): agentic lending assessment interface.
 
-The regulation retriever uses FAISS + SentenceTransformers (`all-MiniLM-L6-v2`) to retrieve relevant sections from a curated knowledge base covering:
+## Repository Structure
 
-- Basel III capital requirements
-- CFPB debt-to-income guidelines
-- Credit score thresholds (FICO)
-- Fair lending laws (ECOA, FHA, CRA)
-- Delinquency and default standards (CECL)
-- Ability-to-Repay rule (Dodd-Frank)
-- Five Cs of Credit framework
-
----
-
-## Dataset
-
-| Attribute | Value |
-|-----------|-------|
-| **Total Samples** | 20,000 loan applications |
-| **Features** | 21 input features + 1 target |
-| **Target** | `loan_paid_back` (1 = paid, 0 = defaulted) |
-| **Class Distribution** | 79.99% paid back, 20.01% defaulted |
-| **Missing Values** | None |
-
-**Feature Categories:** Demographics (4) · Financial (7) · Loan Details (6) · Credit History (4)
-
----
-
-## Tech Stack
-
-| Category | Technologies |
-|----------|-------------|
-| **Language** | Python 3.13 |
-| **ML Framework** | scikit-learn 1.3 |
-| **Data Processing** | pandas 2.1, numpy 1.26 |
-| **Visualization** | matplotlib 3.7, seaborn 0.12 |
-| **Agent Framework** | LangGraph 0.1 |
-| **LLM** | Llama 3.3 70B via Groq (free tier) |
-| **RAG** | FAISS + SentenceTransformers |
-| **Web Framework** | Streamlit 1.28 |
-| **Deployment** | Streamlit Cloud |
-
----
+```text
+credit-risk-scoring/
+├── agent/
+│   ├── graph.py
+│   ├── nodes.py
+│   ├── rag.py
+│   └── state.py
+├── data/
+│   └── regulations.txt
+├── dataset/
+│   └── original_dataset.csv
+├── models/
+│   └── model_params.py
+├── notebooks/
+│   └── eda.ipynb
+├── pages/
+│   └── lending_advisor.py
+├── tests/
+│   ├── test_input_options.py
+│   ├── test_modeling.py
+│   └── test_rag_and_reporting.py
+├── utils/
+│   ├── input_options.py
+│   ├── modeling.py
+│   ├── preprocessing.py
+│   ├── reporting.py
+│   └── runtime.py
+├── visualizations/
+├── app.py
+├── compare_models.py
+├── project_architecture_diagram.py
+├── requirements.txt
+└── train_model.py
+```
 
 ## Installation
 
@@ -174,81 +129,83 @@ cd credit-risk-scoring
 pip install -r requirements.txt
 ```
 
-For Milestone 2, set your Groq API key (free at [console.groq.com](https://console.groq.com)):
+For the lending advisor page, add a Groq API key:
 
 ```bash
 cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
 ```
 
----
+Then edit `.env` and set:
+
+```bash
+GROQ_API_KEY=your_groq_api_key_here
+```
 
 ## Usage
 
-### 1. Train the Model
+### Train the Deployed Model
+
 ```bash
 python train_model.py
 ```
 
-### 2. Compare Models
+### Compare Candidate Models
+
 ```bash
 python compare_models.py
 ```
 
-### 3. Run the Application
+### Run the Streamlit App
+
 ```bash
 streamlit run app.py
 ```
 
-The app has two pages:
-- **Credit Risk Scoring** (`app.py`) — ML-based risk prediction
-- **Lending Advisor** (`pages/lending_advisor.py`) — Agentic AI assessment with regulatory report
+## Testing
 
----
+Run the regression suite:
 
-## Project Structure
-
-```
-credit-risk-scoring/
- app.py                          # Streamlit main page (Milestone 1)
- train_model.py                  # Random Forest training script
- compare_models.py               # Model comparison script
- agent/
-    __init__.py
-    state.py                    # LangGraph state definition
-    nodes.py                    # Agent nodes (risk analyzer, retriever, reporter)
-    graph.py                    # LangGraph workflow assembly
-    rag.py                      # FAISS retrieval module
- data/
-    regulations.txt             # Financial regulations knowledge base
- pages/
-    lending_advisor.py          # Streamlit page (Milestone 2)
- utils/
-    preprocessing.py            # Data preprocessing functions
- models/
-    model_params.py             # Trained model parameters
- dataset/
-    original_dataset.csv        # 20,000 loan applications
- visualizations/                 # Generated charts (7 PNG files)
- notebooks/
-    eda.ipynb                   # Exploratory data analysis
- requirements.txt
- .env.example                    # Environment variable template
- .gitignore
- README.md
+```bash
+python -m unittest discover -s tests -v
 ```
 
----
+Core checks covered today, August 9, 2026:
+
+- prediction input validation
+- zero-interest installment handling
+- training-range warning logic
+- corrupt saved-model fallback
+- retrieval fallback behavior
+- deterministic regulation deduplication
+- report section parsing
+
+## Constraints and Known Limitations
+
+- The deployed model was trained on historical data with limited observed ranges and categories. The UI allows broader custom input, but the app warns when it is extrapolating outside the training distribution.
+- The dataset only contains 36-month and 60-month loan terms. Custom terms are supported in the UI, but predictions for other terms are out-of-distribution estimates.
+- The lending advisor requires a valid `GROQ_API_KEY` for full end-to-end LLM execution.
+- There is no browser-level automated integration test yet for the live Streamlit UI.
+
+## Visual Outputs
+
+Generated artifacts are saved in `visualizations/`, including:
+
+- confusion matrices
+- ROC curves
+- model metric comparison
+- final Random Forest feature importance
 
 ## Team
 
 | Name | Role | Contributions |
 |------|------|---------------|
-| **Ravleen Singh** | Project Lead | Model development, agent architecture, deployment, integration |
-| **Anurag Pandey** | Data Engineer | Data preprocessing, feature engineering, RAG knowledge base |
-| **Ansh Tomar** | Data Analyst | EDA, visualization, documentation, regulatory research |
-| **Himanshu Chauhan** | Frontend Developer | UI development, Streamlit pages, testing, UX |
+| Ravleen Singh | Project Lead | Model development, agent architecture, deployment, integration |
+| Anurag Pandey | Data Engineer | Data preprocessing, feature engineering, RAG knowledge base |
+| Ansh Tomar | Data Analyst | EDA, visualization, documentation, regulatory research |
+| Himanshu Chauhan | Frontend Developer | UI development, Streamlit pages, testing, UX |
 
----
+## Institution
 
-**Institution:** Newton School of Technology | **Project:** GenAI Capstone | **Date:** 2026
+Newton School of Technology  
+GenAI Capstone Project  
+Reviewed and cleaned for final submission on August 9, 2026.

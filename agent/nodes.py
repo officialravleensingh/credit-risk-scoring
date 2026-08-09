@@ -6,11 +6,29 @@ import os
 
 
 def _get_llm():
+    api_key = os.environ.get('GROQ_API_KEY')
+    if not api_key:
+        raise ValueError('GROQ_API_KEY is not configured.')
+
     return ChatGroq(
         model='llama-3.3-70b-versatile',
         temperature=0.2,
-        api_key=os.environ.get('GROQ_API_KEY', '')
+        api_key=api_key
     )
+
+
+def _unique_chunks_in_order(chunks: list[str]) -> list[str]:
+    unique_chunks: list[str] = []
+    seen: set[str] = set()
+
+    for chunk in chunks:
+        normalized = chunk.strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        unique_chunks.append(normalized)
+
+    return unique_chunks
 
 
 def risk_analyzer_node(state: AgentState) -> dict:
@@ -62,13 +80,17 @@ def regulation_retriever_node(state: AgentState) -> dict:
         f"credit utilization open accounts fair lending"
     ]
 
-    all_retrieved = set()
-    for query in query_parts[:3]:
+    ordered_chunks: list[str] = []
+    for query in query_parts:
         result = retrieve(query, k=2)
         for chunk in result.split('\n\n---\n\n'):
-            all_retrieved.add(chunk.strip())
+            ordered_chunks.append(chunk)
 
-    regulations_text = '\n\n---\n\n'.join(list(all_retrieved)[:5])
+    unique_chunks = _unique_chunks_in_order(ordered_chunks)
+    if not unique_chunks:
+        unique_chunks = _unique_chunks_in_order([retrieve("general credit underwriting regulations", k=3)])
+
+    regulations_text = '\n\n---\n\n'.join(unique_chunks[:5])
 
     return {'retrieved_regulations': regulations_text}
 

@@ -1,15 +1,24 @@
+from utils.runtime import configure_runtime_environment
+
+configure_runtime_environment()
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
+from pathlib import Path
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, roc_curve
-from utils.preprocessing import load_data, preprocess_data, prepare_features, scale_features
+from sklearn.pipeline import Pipeline
+
+from utils.modeling import build_preprocessor, compute_permutation_feature_importance, get_train_test_data
+
+VISUALIZATIONS_DIR = Path('visualizations')
 
 def plot_confusion_matrices(models_results, y_test):
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     for idx, (name, result) in enumerate(models_results.items()):
         cm = confusion_matrix(y_test, result['predictions'])
@@ -22,6 +31,7 @@ def plot_confusion_matrices(models_results, y_test):
     print("Saved: visualizations/confusion_matrices.png")
 
 def plot_roc_curves(models_results, y_test):
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
     plt.figure(figsize=(10, 8))
     for name, result in models_results.items():
         fpr, tpr, _ = roc_curve(y_test, result['probabilities'])
@@ -36,6 +46,7 @@ def plot_roc_curves(models_results, y_test):
     print("Saved: visualizations/roc_curves.png")
 
 def plot_metrics_comparison(results_df):
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
     metrics = ['Accuracy', 'Precision', 'Recall', 'F1-Score', 'ROC-AUC']
     fig, ax = plt.subplots(figsize=(12, 6))
     x = np.arange(len(metrics))
@@ -63,11 +74,8 @@ def plot_metrics_comparison(results_df):
     print("Saved: visualizations/metrics_comparison.png")
 
 def plot_feature_importance(model, feature_names):
-    if hasattr(model, 'feature_importances_'):
-        importances = model.feature_importances_
-    else:
-        importances = np.abs(model.coef_[0])
-    
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
+    importances = model.values
     indices = np.argsort(importances)[-10:]
     plt.figure(figsize=(10, 6))
     plt.barh(range(len(indices)), importances[indices], color='skyblue')
@@ -84,15 +92,7 @@ def compare_models():
     print("="*80)
     
     print("\nLoading and preprocessing data...")
-    df = load_data()
-    df_processed, _ = preprocess_data(df)
-    X, y = prepare_features(df_processed)
-    
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
-    
-    X_train_scaled, X_test_scaled, _ = scale_features(X_train, X_test)
+    X_train, X_test, y_train, y_test = get_train_test_data()
     
     models = {
         'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
@@ -105,9 +105,13 @@ def compare_models():
     
     for name, model in models.items():
         print(f"\nTraining {name}...")
-        model.fit(X_train_scaled, y_train)
-        y_pred = model.predict(X_test_scaled)
-        y_pred_proba = model.predict_proba(X_test_scaled)[:, 1]
+        pipeline = Pipeline([
+            ('preprocessor', build_preprocessor()),
+            ('model', model),
+        ])
+        pipeline.fit(X_train, y_train)
+        y_pred = pipeline.predict(X_test)
+        y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
         
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
@@ -120,7 +124,7 @@ def compare_models():
             'probabilities': y_pred_proba,
             'accuracy': accuracy,
             'roc_auc': roc_auc,
-            'model': model
+            'model': pipeline
         }
         
         results.append({
@@ -147,7 +151,8 @@ def compare_models():
     
     best_model_name = max(models_results.items(), key=lambda x: x[1]['roc_auc'])[0]
     best_model = models_results[best_model_name]['model']
-    plot_feature_importance(best_model, X.columns.tolist())
+    feature_contributions = compute_permutation_feature_importance(best_model, X_test, y_test)
+    plot_feature_importance(feature_contributions, feature_contributions.index.tolist())
     
     print(f"\n Best Model: {best_model_name}")
     print(f" All visualizations saved to 'visualizations/' folder")

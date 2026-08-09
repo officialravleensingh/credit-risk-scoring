@@ -1,68 +1,23 @@
 import streamlit as st
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from models.model_params import (
-    feature_importances, label_encoders, accuracy, roc_auc,
-    n_estimators, max_depth, random_state
-)
 from PIL import Image
+from models.model_params import accuracy, roc_auc
+from utils.input_options import (
+    EDUCATION_LEVEL_OPTIONS,
+    EMPLOYMENT_STATUS_OPTIONS,
+    GENDER_OPTIONS,
+    GRADE_SUBGRADE_OPTIONS,
+    LOAN_PURPOSE_OPTIONS,
+    MARITAL_STATUS_OPTIONS,
+    calculate_installment,
+    collect_constraint_notes,
+)
+from utils.modeling import load_or_train_pipeline, predict_credit_risk
 
 st.set_page_config(page_title="Credit Risk Scoring", page_icon="", layout="wide")
 
-FEATURE_ORDER = [
-    'age', 'gender', 'marital_status', 'education_level', 'annual_income',
-    'monthly_income', 'employment_status', 'debt_to_income_ratio', 'credit_score',
-    'loan_amount', 'loan_purpose', 'interest_rate', 'loan_term', 'installment',
-    'grade_subgrade', 'num_of_open_accounts', 'total_credit_limit', 'current_balance',
-    'delinquency_history', 'public_records', 'num_of_delinquencies'
-]
-
-CATEGORICAL_COLS = ['gender', 'marital_status', 'education_level', 'employment_status', 'loan_purpose', 'grade_subgrade']
-
-
-def _encode_categorical_value(column_name, value):
-    mapping = label_encoders.get(column_name, {})
-    if value in mapping:
-        return mapping[value]
-    if 'Other' in mapping:
-        return mapping['Other']
-    return next(iter(mapping.values()), 0)
-
 @st.cache_resource
-def load_model_and_scaler():
-    from utils.preprocessing import load_data, preprocess_data, prepare_features
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.model_selection import train_test_split
-
-    df = load_data()
-    df_processed, _ = preprocess_data(df)
-    X, y = prepare_features(df_processed)
-    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-
-    model = RandomForestClassifier(
-        n_estimators=n_estimators, max_depth=max_depth,
-        random_state=random_state, n_jobs=-1
-    )
-    model.fit(X_train_scaled, y_train)
-    return model, scaler
-
-def predict_credit_risk(input_data):
-    input_df = pd.DataFrame([input_data])
-
-    for col in CATEGORICAL_COLS:
-        input_df[col] = _encode_categorical_value(col, input_df[col].iloc[0])
-
-    input_array = input_df[FEATURE_ORDER].values.astype(float)
-
-    model, scaler = load_model_and_scaler()
-    input_scaled = scaler.transform(input_array)
-    prediction = model.predict(input_scaled)[0]
-    probability = model.predict_proba(input_scaled)[0]
-    return prediction, probability
+def load_model_pipeline():
+    return load_or_train_pipeline()
 
 
 #  Sidebar 
@@ -84,7 +39,7 @@ except Exception:
 st.sidebar.markdown("###  Features")
 st.sidebar.markdown(
     "- Real-time predictions\n"
-    "- 90.15% accuracy\n"
+    f"- {accuracy*100:.2f}% validation accuracy\n"
     "- Random Forest algorithm\n"
     "- 21 input features"
 )
@@ -105,18 +60,19 @@ def main():
     with col1:
         st.subheader(" Personal Information")
         age = st.number_input("Age", min_value=18, max_value=100, value=35)
-        gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-        marital_status = st.selectbox("Marital Status", ["Single", "Married", "Divorced", "Widowed"])
-        education_level = st.selectbox("Education Level", ["High School", "Bachelor's", "Master's", "PhD", "Other"])
-        employment_status = st.selectbox("Employment Status", ["Employed", "Self-employed", "Unemployed", "Student", "Retired"])
+        gender = st.selectbox("Gender", GENDER_OPTIONS)
+        marital_status = st.selectbox("Marital Status", MARITAL_STATUS_OPTIONS)
+        education_level = st.selectbox("Education Level", EDUCATION_LEVEL_OPTIONS)
+        employment_status = st.selectbox("Employment Status", EMPLOYMENT_STATUS_OPTIONS)
 
     with col2:
         st.subheader(" Financial Information")
         annual_income = st.number_input("Annual Income ($)", min_value=0, value=50000)
         monthly_income = annual_income / 12
-        debt_to_income_ratio = st.slider("Debt-to-Income Ratio", 0.0, 1.0, 0.15, 0.01)
+        st.caption("Monthly income is derived automatically from annual income to stay consistent with the training data.")
+        debt_to_income_ratio = st.number_input("Debt-to-Income Ratio", min_value=0.0, max_value=3.0, value=0.15, step=0.01, format="%.2f")
         credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=700)
-        num_of_open_accounts = st.number_input("Number of Open Accounts", min_value=0, value=5)
+        num_of_open_accounts = st.number_input("Number of Open Accounts", min_value=0, max_value=100, value=5)
         total_credit_limit = st.number_input("Total Credit Limit ($)", min_value=0, value=50000)
         current_balance = st.number_input("Current Balance ($)", min_value=0, value=10000)
 
@@ -127,30 +83,40 @@ def main():
     with col3:
         st.subheader(" Loan Details")
         loan_amount = st.number_input("Loan Amount ($)", min_value=0, value=15000)
-        loan_purpose = st.selectbox("Loan Purpose", [
-            "Debt consolidation", "Car", "Home", "Business",
-            "Medical", "Education", "Vacation", "Other"
-        ])
-        interest_rate = st.slider("Interest Rate (%)", 5.0, 25.0, 12.0, 0.1)
-        loan_term = st.selectbox("Loan Term (months)", [36, 60])
-        r = interest_rate / 100 / 12
-        installment = (loan_amount * r * (1 + r) ** loan_term) / ((1 + r) ** loan_term - 1)
-        grade_subgrade = st.selectbox("Grade/Subgrade", [
-            "A1", "A2", "A3", "A4", "A5",
-            "B1", "B2", "B3", "B4", "B5",
-            "C1", "C2", "C3", "C4", "C5",
-            "D1", "D2", "D3", "D4", "D5",
-            "E1", "E2", "E3", "E4", "E5",
-            "F1", "F2", "F3", "F4", "F5"
-        ])
+        loan_purpose = st.selectbox("Loan Purpose", LOAN_PURPOSE_OPTIONS)
+        interest_rate = st.number_input("Interest Rate (%)", min_value=0.0, max_value=40.0, value=12.0, step=0.1, format="%.2f")
+        loan_term = st.number_input("Loan Term (months)", min_value=12, max_value=360, value=36, step=1)
+        installment = calculate_installment(loan_amount, interest_rate, loan_term)
+        grade_subgrade = st.selectbox("Grade/Subgrade", GRADE_SUBGRADE_OPTIONS)
 
     with col4:
         st.subheader(" Credit History")
-        delinquency_history = st.number_input("Delinquency History", min_value=0, value=0)
-        public_records = st.number_input("Public Records", min_value=0, value=0)
-        num_of_delinquencies = st.number_input("Number of Delinquencies", min_value=0, value=0)
+        delinquency_history = st.number_input("Delinquency History", min_value=0, max_value=100, value=0)
+        public_records = st.number_input("Public Records", min_value=0, max_value=100, value=0)
+        num_of_delinquencies = st.number_input("Number of Delinquencies", min_value=0, max_value=100, value=0)
 
     st.markdown("---")
+
+    preview_input = {
+        'age': age,
+        'marital_status': marital_status,
+        'employment_status': employment_status,
+        'annual_income': annual_income,
+        'debt_to_income_ratio': debt_to_income_ratio,
+        'credit_score': credit_score,
+        'loan_amount': loan_amount,
+        'interest_rate': interest_rate,
+        'loan_term': loan_term,
+        'num_of_open_accounts': num_of_open_accounts,
+        'total_credit_limit': total_credit_limit,
+        'current_balance': current_balance,
+        'delinquency_history': delinquency_history,
+        'public_records': public_records,
+        'num_of_delinquencies': num_of_delinquencies,
+    }
+    constraint_notes = collect_constraint_notes(preview_input)
+    if constraint_notes:
+        st.warning("Prediction note: the current input includes values the model did not see often or at all during training.\n\n- " + "\n- ".join(constraint_notes))
 
     _, col_btn, _ = st.columns([1, 1, 1])
     with col_btn:
@@ -182,7 +148,8 @@ def main():
         }
 
         with st.spinner('Analyzing credit risk...'):
-            prediction, probability = predict_credit_risk(input_data)
+            pipeline = load_model_pipeline()
+            prediction, repayment_probability, default_probability = predict_credit_risk(input_data, pipeline)
 
         st.markdown("---")
 
@@ -195,8 +162,8 @@ def main():
                 st.error(" HIGH RISK - Loan Default Likely")
 
         with col_result2:
-            st.metric("Repayment Probability", f"{probability[1]*100:.2f}%")
-            st.metric("Default Probability", f"{probability[0]*100:.2f}%")
+            st.metric("Repayment Probability", f"{repayment_probability*100:.2f}%")
+            st.metric("Default Probability", f"{default_probability*100:.2f}%")
 
     st.markdown("---")
     st.markdown("###  Model Information")

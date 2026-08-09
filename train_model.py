@@ -1,13 +1,27 @@
-import pandas as pd
+from utils.runtime import configure_runtime_environment
+
+configure_runtime_environment()
+
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_auc_score, roc_curve
-from utils.preprocessing import load_data, preprocess_data, prepare_features, scale_features
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve
+from pathlib import Path
+
+from utils.modeling import (
+    MODEL_MAX_DEPTH,
+    MODEL_N_ESTIMATORS,
+    MODEL_RANDOM_STATE,
+    compute_permutation_feature_importance,
+    train_random_forest_pipeline,
+)
+from utils.preprocessing import load_data
+
+VISUALIZATIONS_DIR = Path('visualizations')
+
 
 def plot_confusion_matrix(y_test, y_pred, accuracy):
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
     cm = confusion_matrix(y_test, y_pred)
     plt.figure(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=True)
@@ -19,6 +33,7 @@ def plot_confusion_matrix(y_test, y_pred, accuracy):
     print("Saved: visualizations/final_confusion_matrix.png")
 
 def plot_roc_curve(y_test, y_pred_proba, roc_auc):
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
     fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
     plt.figure(figsize=(8, 6))
     plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (AUC = {roc_auc:.4f})')
@@ -35,7 +50,8 @@ def plot_roc_curve(y_test, y_pred_proba, roc_auc):
     print("Saved: visualizations/final_roc_curve.png")
 
 def plot_feature_importance(model, feature_names):
-    importances = model.feature_importances_
+    VISUALIZATIONS_DIR.mkdir(parents=True, exist_ok=True)
+    importances = model.values
     indices = np.argsort(importances)[-10:]
     plt.figure(figsize=(10, 6))
     plt.barh(range(len(indices)), importances[indices], color='skyblue')
@@ -53,30 +69,16 @@ def train_model():
     print(f"Dataset shape: {df.shape}")
     print(f"Target distribution:\n{df['loan_paid_back'].value_counts()}")
     
-    print("\nPreprocessing data...")
-    df_processed, label_encoders = preprocess_data(df)
-    
-    print("Preparing features...")
-    X, y = prepare_features(df_processed)
-    
-    print("Splitting data...")
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
-    )
-    
-    print("Scaling features...")
-    X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
-    
     print("\nTraining Random Forest model...")
-    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=10, n_jobs=-1)
-    model.fit(X_train_scaled, y_train)
+    artifacts = train_random_forest_pipeline(save_artifact=True)
+    model = artifacts.pipeline.named_steps['model']
     
     print("Evaluating model...")
-    y_pred = model.predict(X_test_scaled)
-    y_pred_proba = model.predict_proba(X_test_scaled)[:, 1]
-    
-    accuracy = accuracy_score(y_test, y_pred)
-    roc_auc = roc_auc_score(y_test, y_pred_proba)
+    y_test = artifacts.y_test
+    y_pred = artifacts.y_pred
+    y_pred_proba = artifacts.y_pred_proba
+    accuracy = artifacts.accuracy
+    roc_auc = artifacts.roc_auc
     
     print(f"\nModel Accuracy: {accuracy*100:.2f}%")
     print(f"ROC-AUC Score: {roc_auc:.4f}")
@@ -88,34 +90,26 @@ def train_model():
     print("\nGenerating visualizations...")
     plot_confusion_matrix(y_test, y_pred, accuracy)
     plot_roc_curve(y_test, y_pred_proba, roc_auc)
-    plot_feature_importance(model, X.columns.tolist())
+    feature_contributions = compute_permutation_feature_importance(
+        artifacts.pipeline,
+        artifacts.X_test,
+        artifacts.y_test,
+    )
+    plot_feature_importance(feature_contributions, feature_contributions.index.tolist())
     
     print("\nSaving model parameters...")
+    top_features = feature_contributions.head(10)
     with open('models/model_params.py', 'w') as f:
-        f.write('import numpy as np\n\n')
         f.write(f'model_type = "RandomForest"\n')
-        f.write(f'n_estimators = {model.n_estimators}\n')
-        f.write(f'max_depth = {model.max_depth}\n')
-        f.write(f'random_state = {model.random_state}\n\n')
-        f.write('feature_importances = np.array([\n')
-        for val in model.feature_importances_:
-            f.write(f'    {val},\n')
-        f.write('])\n\n')
-        f.write('scaler_mean = np.array([\n')
-        for val in scaler.mean_:
-            f.write(f'    {val},\n')
-        f.write('])\n\n')
-        f.write('scaler_scale = np.array([\n')
-        for val in scaler.scale_:
-            f.write(f'    {val},\n')
-        f.write('])\n\n')
-        f.write('label_encoders = {\n')
-        for col, le in label_encoders.items():
-            f.write(f'    "{col}": {{\n')
-            for i, cls in enumerate(le.classes_):
-                f.write(f'        "{cls}": {i},\n')
-            f.write('    },\n')
+        f.write(f'n_estimators = {MODEL_N_ESTIMATORS}\n')
+        f.write(f'max_depth = {MODEL_MAX_DEPTH}\n')
+        f.write(f'random_state = {MODEL_RANDOM_STATE}\n\n')
+        f.write(f'feature_names = {feature_contributions.index.tolist()!r}\n')
+        f.write('feature_importances = {\n')
+        for feature_name, value in feature_contributions.items():
+            f.write(f'    "{feature_name}": {value},\n')
         f.write('}\n\n')
+        f.write(f'top_features = {list(top_features.items())!r}\n')
         f.write(f'accuracy = {accuracy}\n')
         f.write(f'roc_auc = {roc_auc}\n')
     
